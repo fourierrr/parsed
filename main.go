@@ -70,28 +70,25 @@ func parseAndSave(inputfile string) {
 
 	// 逐行扫描文件
 	for scanner.Scan() {
-		// 如果行号大于等于18，则提取内容
-		if lineNumber >= 18 {
-			line := scanner.Text()
-			// 用空格分割每行数据
-			parts := strings.Fields(line)
+		line := scanner.Text()
+		// 用空格分割每行数据
+		parts := strings.Fields(line)
 
-			// 如果至少有三列数据
-			if len(parts) >= 3 {
-				// 提取倒数第一列和倒数第三列
-				lastColumn := parts[len(parts)-1]
-				thirdToLastColumn := parts[len(parts)-3]
+		// 如果至少有6列数据
+		if len(parts) >= 6 {
+			// 提取倒数第一列和倒数第三列
+			lastColumn := parts[len(parts)-1]
+			thirdToLastColumn := parts[len(parts)-3]
 
-				// 输出提取到的数据
-				// fmt.Printf("倒数第一列: %s, 倒数第三列: %s\n", lastColumn, thirdToLastColumn)
+			// 输出提取到的数据
+			// fmt.Printf("倒数第一列: %s, 倒数第三列: %s\n", lastColumn, thirdToLastColumn)
 
-				// 将提取到的数据写入文件
-				if _, err = f.WriteString(thirdToLastColumn + " " + lastColumn + "\n"); err != nil {
-					fmt.Println(err)
-					return
-				}
-
+			// 将提取到的数据写入文件
+			if _, err = f.WriteString(thirdToLastColumn + " " + lastColumn + "\n"); err != nil {
+				fmt.Println(err)
+				return
 			}
+
 		}
 
 		// 增加行号计数
