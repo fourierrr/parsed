@@ -3,42 +3,56 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"io/ioutil"
 	"os"
+	"path/filepath"
 	"strings"
 	"time"
 )
 
 const (
-	INPUT_FILE  = "d.txt"
-	OUTPUT_FILE = "Last3_And_Last1"
+	TARGET_DIR = "dingData"
 )
 
 func main() {
-	var filename string
 
-	if len(os.Args) == 2 {
-		filename = os.Args[1]
+	// read all file in dir
+	filelist, err := ioutil.ReadDir(TARGET_DIR)
+	if err != nil {
+		fmt.Println(err)
+		return
 	}
 
-	if filename == "" {
-		filename = INPUT_FILE
+	for _, file := range filelist {
+		input := file.Name()
+		input = filepath.Join(TARGET_DIR, input)
+		parseAndSave(input)
 	}
 
-	fmt.Println("数据文件名:", filename)
+}
+
+func parseAndSave(inputfile string) {
+
+	fmt.Println("数据文件名:", inputfile)
 
 	// 打开文件
-	file, err := os.Open(filename)
+	file, err := os.Open(inputfile)
 	if err != nil {
 		fmt.Println("无法打开文件:", err)
 		return
 	}
 	defer file.Close()
 
+	input_base := filepath.Base(inputfile)
+	input_ext := filepath.Ext(inputfile)
+
 	//OUTPUT_FILE 加上时间后缀
-	output := OUTPUT_FILE + "_" + time.Now().Format("2006-01-02-15-04-05") + ".txt"
+	output := input_base + "_" + time.Now().Format("2006-01-02-15-04-05") + input_ext
+
+	output = filepath.Join(TARGET_DIR, output)
 
 	// 创建一个新文件，用于保存提取到的数据
-	f, err := os.OpenFile(output, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	f, err := os.OpenFile(output, os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -87,7 +101,7 @@ func main() {
 	//保存文件
 	f.Sync()
 
-	fmt.Printf("数据提取完成: %s", OUTPUT_FILE)
+	fmt.Printf("数据提取完成: %s", output)
 
 	// 检查扫描过程是否出错
 	if err := scanner.Err(); err != nil {
